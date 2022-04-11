@@ -5,6 +5,7 @@ var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_we
 d3.json(queryUrl).then(function (data) {
   // Once we get a response, send the data.features object to the createFeatures function.
   createFeatures(data.features);
+  console.log(data)
 });
 
 function createFeatures(earthquakeData) {
@@ -12,8 +13,10 @@ function createFeatures(earthquakeData) {
   // Define a function that we want to run once for each feature in the features array.
   // Give each feature a popup that describes the place and time of the earthquake.
   function onEachFeature(feature, layer) {
-    layer.bindPopup(`<h3>${feature.properties.place}</h3><hr><p>${new Date(feature.properties.mag)}</p>`);
+      layer.bindPopup('<h3>' + feature.properties.place + "<h3><h3>Magnitude: " + feature.properties.mag +  "</h3>");
+    
   }
+
 
   // Create a GeoJSON layer that contains the features array on the earthquakeData object.
   // Run the onEachFeature function once for each piece of data in the array.
@@ -36,10 +39,16 @@ function createMap(earthquakes) {
     attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
   });
 
+  var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+});
+
   // Create a baseMaps object.
   var baseMaps = {
     "Street Map": street,
-    "Topographic Map": topo
+    "Topographic Map": topo,
+    "Satellite": googleSat
   };
 
   // Create an overlay object to hold our overlay.
@@ -62,5 +71,32 @@ function createMap(earthquakes) {
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
+
+  // Function that will determine the marker color based on the earthquake's depth
+function chooseColor(depth) {
+    switch(depth){
+      case depth > 90 :return "red";
+      case depth > 70 :return "orangered";
+      case depth > 50 :return "orange";
+      case depth > 30 :return "gold";
+      case depth > 10 :return "yellow";
+      default: return "limegreen";
+    }
+  }
+
+
+
+  // Create a legend to display information about our map.
+var info = L.control({
+    position: "bottomright"
+  });
+  // When the layer control is added, insert a div with the class of "legend".
+  info.onAdd = function() {
+    var div = L.DomUtil.create("div", "legend"),
+    depth = [-10, 10, 30, 50, 70, 90];
+    return div;
+  };
+  // Add the info legend to the map.
+  info.addTo(map);
 
 }
