@@ -13,8 +13,8 @@ function createFeatures(earthquakeData) {
   // Define a function that we want to run once for each feature in the features array.
   // Give each feature a popup that describes the place and time of the earthquake.
   function onEachFeature(feature, layer) {
-      layer.bindPopup('<h3>' + feature.properties.place + "<h3><h3>Magnitude: " + feature.properties.mag +  "</h3>");
-    
+      layer.bindPopup('<h3>Location: ' + feature.properties.place + "<h3><h3>Magnitude: " + feature.properties.mag +  "</h3>Date: " + new Date(feature.properties.time));
+      
   }
 
 
@@ -72,6 +72,12 @@ function createMap(earthquakes) {
     collapsed: false
   }).addTo(myMap);
 
+  
+  // Function to determine the marker size by magnitude
+  function markerSize(magnitude){
+    return Math.sqrt(population) * 50;
+  }
+  
   // Function that will determine the marker color based on the earthquake's depth
 function chooseColor(depth) {
     switch(depth){
@@ -83,6 +89,17 @@ function chooseColor(depth) {
       default: return "limegreen";
     }
   }
+
+  // Fuction to create markers
+  function circleMarker(feature, location){
+    var markerOptions ={
+        radius: markerSize(feature.properties.mag),
+        fillColor: chooseColor(feature.properties.mag),
+        fillOpacity: 0.75,
+        color: "black"
+    }
+    returnL.circle(location, markerOptions);  
+  };
 
 
 
