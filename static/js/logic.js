@@ -17,19 +17,20 @@ function createMap(earthquakes) {
       'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
   });
 
-  var googleSat = L.tileLayer(
-    "http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
-    {
-      maxZoom: 20,
+   var googleSat = L.tileLayer(
+     "http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+     {
+       maxZoom: 20,
       subdomains: ["mt0", "mt1", "mt2", "mt3"],
-    }
-  );
+     }
+   );
+ 
 
 
   // Perform a GET request to the query URL/ Check console.log
-  d3.json(queryUrl).then(function (data) {
-    console.log(data);
-  });
+  //d3.json(queryUrl).then(function (data) {
+   // console.log(data);
+  //});
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load.
   var myMap = L.map("map", {
@@ -57,40 +58,45 @@ function createMap(earthquakes) {
       collapsed: false,
     })
     .addTo(myMap);
-}
+    
+};
 
 //  // Perform a GET request to the query URL/ Check console.log
-// d3.json(queryUrl).then(function (data) {
-//   console.log(data);
-// });
-function createMarkers(response) {
-  //     // Pull the "features" property from response.data.
-  var quakes = response.features;
+d3.json(queryUrl).then(function (data) {
+   console.log(data);
+ });
+
+  function createMarkers(response) {
+  //  Pull the "features" property from response.data.
+   var quakes = response.features;
 
   // Initialize an array to hold bike markers.
-  var quakeMarkers = [];
+    var quakeMarkers = [];
 
   // Loop through the features array.
-  for (var i = 0; i < quakes.length; i++) {
-    var quake = quakes[i];
+  //for (var i = 0; i < quakes.length; i++) {
+    //var quake = quakes[i];
+    // Try Reed's method instead - works!
+
+    for(quake of quakes){
 
     // Function to determine color based on depth - third coordinate in list of coordinates.
-    function getColor(depth) {
-      switch (true) {
-        case depth < 10:
-          return "yellow";
-        case depth < 30:
-          return "orange";
-        case depth < 50:
-          return "limegreen";
-        case depth < 70:
-          return "green";
-        case depth < 90:
-          return "chocolate";
-        default:
-          return "red";
-      }
-    }
+     function getColor(depth) {
+       switch (true) {
+          case depth < 10:
+           return "yellow";
+         case depth < 30:
+           return "orange";
+         case depth < 50:
+            return "limegreen";
+          case depth < 70:
+            return "green";
+          case depth < 90:
+           return "chocolate";
+         default:
+           return "red";
+        }
+     }
 
     // For each earthquake, create a marker, and bind a popup with the station's name.
     var quakeMarker = L.circle(
@@ -127,10 +133,12 @@ d3.json(queryUrl).then(createMarkers);
 var legend = L.control({ position: "bottomright" });
 
 //  When the layer control is added, insert a div with the class of "legend".
-legend.onAdd = function () {
-  var div = L.DomUtil.create("div", "legend");
+legend.onAdd = function() {
+  var div = L.DomUtil.create("div", "info legend");
+    labels = ['Earthquake Depth Range'],
     depth = [-10, 10, 30, 50, 70, 90];
-    labels = ['Earthquake Depth Range'];
+ 
+  //for(d of depths){ 
   for (var i = 0; i < depth.length; i++) {
     div.innerHTML += labels.push(
       '<i style="background:' +
@@ -145,4 +153,5 @@ legend.onAdd = function () {
 
 // Add the legend info to the map.
 legend.addTo(myMap);
+//});
 
