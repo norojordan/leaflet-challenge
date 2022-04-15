@@ -180,19 +180,19 @@ function createMap(earthquakes){
 
       // Function to determine color based on depth - third coordinate in list of coordinates.
       function getColor(depth) {
-        switch (depth) {
-          case depth > 90:
-            return "red";
-          case depth > 70:
-            return "orange";
-          case depth > 50:
+        switch (true) {
+          case depth < 10:
             return "yellow";
-          case depth > 30:
+          case depth < 30:
+            return "orange";
+          case depth < 50:
+            return "limegreen";
+          case depth < 70:
             return "green";
-          case depth > 10:
-            return "blue";
+          case depth < 90:
+            return "chocolate";
           default:
-            return "violet";
+            return "red";
         }
       }
 
