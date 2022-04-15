@@ -2,7 +2,7 @@
 var queryUrl =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
-function createMap(earthquakes){
+function createMap(earthquakes) {
   // Create the base tile layers.
   var street = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -25,47 +25,11 @@ function createMap(earthquakes){
     }
   );
 
-  // Function to determine the marker size by magnitude.
-  function markerSize(mag) {
-    return mag * 500;
-  }
 
-  function getstyle(feature) {
-    return {
-      color: white,
-      radius: markerSize(feature.properties.mag),
-      fillColor: getColor([feature.geometry.coordinates[2]]),
-      weight: 1.5,
-    };
-  }
-
-  // Perform a GET request to the query URL/
-    d3.json(queryUrl).then(function (data) {
-  // //     // Once we get a response, send the data.features object to the createFeatures function.
-  //     createFeatures(data.features);
-       console.log(data)
-    });
-
-  //   function createFeatures(earthquakes){
-
-  //   function createFeatures(earthquakeData) {
-
-  //     // Define a function that we want to run once for each feature in the features array.
-  //     // Give each feature a popup that describes the place, magnitude and depth of the earthquake.
-  //     function onEachFeature(feature, layer) {
-  //         layer.bindPopup('<h3>Location: ' + feature.properties.place + "<h3><h3>Magnitude: " + feature.properties.mag + "<h3>Depth:</b> " + feature.geometry.coordinates[2]);
-
-  //      }
-
-  //     // Create a GeoJSON layer that contains the features array on the earthquakeData object.
-  //     // Run the onEachFeature function once for each piece of data in the array.
-  //     var earthquakes = L.geoJSON(earthquakeData, {
-  //       onEachFeature: onEachFeature
-  //     });
-
-  //      // Send our earthquakes layer to the createMap function/
-  //     createMap(earthquakes);
-  //   }
+  // Perform a GET request to the query URL/ Check console.log
+  d3.json(queryUrl).then(function (data) {
+    console.log(data);
+  });
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load.
   var myMap = L.map("map", {
@@ -86,96 +50,99 @@ function createMap(earthquakes){
     Earthquakes: earthquakes,
   };
 
-  // Create a layer control.
-  // Pass it our baseMaps and overlayMaps.
+  // Create a layer control. Pass it our baseMaps and overlayMaps.
   // Add the layer control to the map.
   L.control
     .layers(baseMaps, overlayMaps, {
       collapsed: false,
     })
     .addTo(myMap);
-}    
+}
 
+//  // Perform a GET request to the query URL/ Check console.log
+// d3.json(queryUrl).then(function (data) {
+//   console.log(data);
+// });
+function createMarkers(response) {
+  //     // Pull the "features" property from response.data.
+  var quakes = response.features;
 
-  function createMarkers(response) {
-    //     // Pull the "features" property from response.data.
-    var quakes = response.features;
+  // Initialize an array to hold bike markers.
+  var quakeMarkers = [];
 
-    // Initialize an array to hold bike markers.
-    var quakeMarkers = [];
+  // Loop through the features array.
+  for (var i = 0; i < quakes.length; i++) {
+    var quake = quakes[i];
 
-    // Loop through the features array.
-    for (var i = 0; i < quakes.length; i++) {
-      var quake = quakes[i];
-
-      // Function to determine color based on depth - third coordinate in list of coordinates.
-      function getColor(depth) {
-        switch (true) {
-          case depth < 10:
-            return "yellow";
-          case depth < 30:
-            return "orange";
-          case depth < 50:
-            return "limegreen";
-          case depth < 70:
-            return "green";
-          case depth < 90:
-            return "chocolate";
-          default:
-            return "red";
-        }
+    // Function to determine color based on depth - third coordinate in list of coordinates.
+    function getColor(depth) {
+      switch (true) {
+        case depth < 10:
+          return "yellow";
+        case depth < 30:
+          return "orange";
+        case depth < 50:
+          return "limegreen";
+        case depth < 70:
+          return "green";
+        case depth < 90:
+          return "chocolate";
+        default:
+          return "red";
       }
-
-      // For each earthquake, create a marker, and bind a popup with the station's name.
-      var quakeMarker = L.circle(
-        [quake.geometry.coordinates[1], quake.geometry.coordinates[0]],
-        {
-          fillOpacity: 0.75,
-          color: "black",
-          weight: 1.5,
-          fillColor: getColor([quake.geometry.coordinates[2]]),
-          radius: quake.properties.mag * 20000,
-        }
-      ).bindPopup(
-        "<h3>Location: " +
-          quake.properties.place +
-          "<h3><h3>Magnitude: " +
-          quake.properties.mag +
-          "<h3>Date:</b> " +
-          new Date(quake.properties.time)
-          //quake.geometry.coordinates[2]
-      );
-
-
-      //       // Add the marker to the bikeMarkers array.
-      quakeMarkers.push(quakeMarker);
     }
 
-    //     // Create a layer group that's made from the bike markers array, and pass it to the createMap function.
-    createMap(L.layerGroup(quakeMarkers));
+    // For each earthquake, create a marker, and bind a popup with the station's name.
+    var quakeMarker = L.circle(
+      [quake.geometry.coordinates[1], quake.geometry.coordinates[0]],
+      {
+        fillOpacity: 0.75,
+        color: "black",
+        weight: 1.5,
+        fillColor: getColor([quake.geometry.coordinates[2]]),
+        radius: quake.properties.mag * 20000,
+      }
+    ).bindPopup(
+      "<h3>Location: " +
+        quake.properties.place +
+        "<h3><h3>Magnitude: " +
+        quake.properties.mag +
+        "<h3>Date:</b> " +
+        new Date(quake.properties.time)
+      //This is for depth:  quake.geometry.coordinates[2]
+    );
+
+    //Add the marker to the quakeMarkers array.
+    quakeMarkers.push(quakeMarker);
   }
 
-  // Perform an API call to the Earthquake API to get the station information. Call createMarkers when it completes.
-  d3.json(queryUrl).then(createMarkers);
+  // Create a layer group that's made from the quake markers array, and pass it to the createMap function.
+  createMap(L.layerGroup(quakeMarkers));
+}
 
-  //   // Create a legend to display information about our map.
-  //    var legend = L.control({position: "bottomright"});
+// Perform an API call to the Earthquake API to get the station information. Call createMarkers when it completes.
+d3.json(queryUrl).then(createMarkers);
 
-  // //   // When the layer control is added, insert a div with the class of "legend".
-  //   legend.onAdd = function(myMap) {
+// Create a legend to display information about our map.
+var legend = L.control({ position: "bottomright" });
 
-  //     var div = L.DomUtil.create("div", "legend"),
-  //      depth = [-10, 10, 30, 50, 70, 90];
-  //     for (var i = 0; i < depth.length; i++){
-  //          div.innerHTML +=
-  //          labels.push(
-  //              'i style="background:' + getColor(depth[i]+1) + '"><i>' +
-  //             (depth[i] ? depth[i] + "<br>": '+'));
-  //             div.innerHTML = labels.join('<br>');
-  //      }
-  //      return div;
-  //   };
+//  When the layer control is added, insert a div with the class of "legend".
+legend.onAdd = function () {
+  var div = L.DomUtil.create("div", "legend");
+    depth = [-10, 10, 30, 50, 70, 90];
+    labels = ['Earthquake Depth Range'];
+  for (var i = 0; i < depth.length; i++) {
+    div.innerHTML += labels.push(
+      '<i style="background:' +
+        getColor(depth[i] + 1) +
+        '"><i>' +
+        (depth[i] ? depth[i] + "<br>" : "+")
+    );
+    div.innerHTML = labels.join("<br>");
+  }
+  return div;
+}
 
-  // //   // Add the legend info to the map.
-  //    legend.addTo(myMap);
+// Add the legend info to the map.
+legend.addTo(myMap);
 
