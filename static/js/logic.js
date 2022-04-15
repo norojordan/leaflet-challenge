@@ -96,76 +96,6 @@ function createMap(earthquakes){
     .addTo(myMap);
 }    
 
-  // Create a GeoJSON layer that contains the features array on the earthquakeData object.
-
-  //   L.geoJSON(earthquakeData, {
-  //     pointToLayer: function(feature, coord){
-  //         return L.circleMarker(coord,
-  //             {
-  //                 radius: markerSize(feature.properties.mag),
-  //                 fillColor: getColor([feature.geomerty.coordinates[2]]),
-  //                 fillOpacity: 0.75,
-  //                 color: "black"
-  //             }
-
-  //         );
-  //     },
-  // }).addTo(earthquakes);
-
-  // earthquakes.addTo(myMap);
-
-  // Fuction to create markers
-  //   function circleMarker(feature, location){
-  //     var markerOptions ={
-  //         radius: markerSize(feature.properties.mag),
-  //         fillColor: getColor([feature.geomerty.coordinates[2]]),
-  //         fillOpacity: 0.75,
-  //         color: "black"
-  //     }
-  //     returnL.circle(location, markerOptions);
-  //   };
-
-  //    L.geoJSON(earthquakeData,{
-  //        pointToLayer:(feature, coord)=>{
-  //            return L.circleMarker(coord);
-  //        }
-
-  //   })
-
-  // L.geoJson(data, {
-  //     pointToLayer: (feature, coord)=>{
-  //         return L.circleMarker(ccord);
-  //     }
-  //     style: getstyle,
-  //     function onEachFeature(feature, layer) {
-  //         layer.bindPopup('<h3>Location: ' + feature.properties.place + "<h3><h3>Magnitude: " + feature.properties.mag +  "</h3>Date: " + new Date(feature.properties.time));
-
-  //     }
-  //     onEachFeature: (feature, layer)=>
-  //         layer.bindPop('<h3> $')
-  //     }
-  // })
-
-  // Fuction to create markers
-  //   function circleMarker(feature, location){
-  //     var markerOptions ={
-  //         radius: markerSize(feature.properties.mag),
-  //         fillColor: chooseColor(feature.properties.mag),
-  //         fillOpacity: 0.75,
-  //         color: "black"
-  //     }
-  //     returnL.circle(location, markerOptions);
-  //   };
-
-  //   for(city of cities){
-  //     L.circle(city.location, {
-  //       fillOpacity: 0.75,
-  //       color: "black",
-  //       fillColor: "purple",
-  //       // Setting our circle's radius to equal the output of our markerSize() function:
-  //       // This will make our marker's size proportionate to its population.
-  //       radius: markerSize(city.population)
-  //     })
 
   function createMarkers(response) {
     //     // Pull the "features" property from response.data.
@@ -211,9 +141,11 @@ function createMap(earthquakes){
           quake.properties.place +
           "<h3><h3>Magnitude: " +
           quake.properties.mag +
-          "<h3>Depth:</b> " +
-          quake.geometry.coordinates[2]
+          "<h3>Date:</b> " +
+          new Date(quake.properties.time)
+          //quake.geometry.coordinates[2]
       );
+
 
       //       // Add the marker to the bikeMarkers array.
       quakeMarkers.push(quakeMarker);
