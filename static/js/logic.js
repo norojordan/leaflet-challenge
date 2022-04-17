@@ -27,15 +27,11 @@ function createMap(earthquakes) {
     }
   );
 
-  // Perform a GET request to the query URL/ Check console.log
-  //d3.json(queryUrl).then(function (data) {
-  // console.log(data);
-  //});
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load.
   myMap = L.map("map", {
     center: [37.09, -95.71],
-    zoom: 5,
+    zoom: 6,
     layers: [street, earthquakes],
   });
 
@@ -112,6 +108,8 @@ function createMarkers(response) {
         quake.properties.place +
         "<h3><h3>Magnitude: " +
         quake.properties.mag +
+        "<h3><h3>Depth: " +
+        quake.geometry.coordinates[2] +
         "<h3>Date:</b> " +
         new Date(quake.properties.time)
       //This is for depth:  quake.geometry.coordinates[2]
@@ -134,17 +132,17 @@ var legend = L.control({ position: "bottomright" });
 //  When the layer control is added, insert a div with the class of "legend".
 
 function createLegend() {
-  legend.onAdd = function () {
+  legend.onAdd = function (map) {
     var div = L.DomUtil.create("div", "info legend");
-    (labels = ["Earthquake Depth Range"]), (depth = [-10, 10, 30, 50, 70, 90]);
+    (labels = ["Earthquake Depth Range"]), (depth = [90, 70, 50, 30, 10, 0]);
 
     //for(d of depths){
     for (var i = 0; i < depth.length; i++) {
       labels.push(
         '<i style="background:' +
           getColor(depth[i] + 1) +
-          '">' +
-          (depth[i] ? depth[i] + "<br>" : "+") + "</i>"
+          '"></i>' +
+          (depth[i] ? depth[i] + "<br>" : "+") 
       );
     }
     div.innerHTML = labels.join("<br>");
