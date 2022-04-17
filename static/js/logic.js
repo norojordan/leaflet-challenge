@@ -112,7 +112,7 @@ function createMarkers(response) {
         quake.geometry.coordinates[2] +
         "<h3>Date:</b> " +
         new Date(quake.properties.time)
-      //This is for depth:  quake.geometry.coordinates[2]
+      
     );
 
     //Add the marker to the quakeMarkers array.
@@ -133,8 +133,10 @@ var legend = L.control({ position: "bottomright" });
 
 function createLegend() {
   legend.onAdd = function (map) {
-    var div = L.DomUtil.create("div", "info legend");
-    (labels = ["Earthquake Depth Range"]), (depth = [90, 70, 50, 30, 10, 0]);
+    var div = L.DomUtil.create("div", "info legend"),
+    labels = ["Earthquake Depth Range"], 
+    //depthranges = ['0-10', '10-30', '30-50', '50-70', '70-90', '90+'],
+    depth = [0, 10, 30, 50, 70, 90];
 
     //for(d of depths){
     for (var i = 0; i < depth.length; i++) {
